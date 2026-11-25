@@ -1,0 +1,23 @@
+# Dummy Ultralytics dataset descriptor (overridden programmatically by data/paired_dataset.py)
+path: ./datasets
+train: train
+val: val
+nc: 3
+names:
+  0: person
+  1: rider
+  2: crowd
+
+# Supported paired RGB-T dataset JSON schemas under <data_root>:
+#   RGBTDronePerson (R):   R_train.json, R_val.json, R_protocol.json         (512x640, nc=3)
+#   VTUAV-det (U):         U_640x360_train.json, U_640x360_val.json, U_protocol.json  (384x640, nc=1)
+#   NII-CU MAPD (N):       N_640x360_{train,val}.json, N_protocol.json       (384x640, nc=1)
+#   NII-CU 4ch (N4ch):     N4ch_640x468_{train,val}.json, N4ch_protocol.json (480x640, nc=1)
+#   NII-CU 960 (N960):     N_960x540_{train,val}.json, N960_protocol.json    (544x960, nc=1)
+#   NII-CU 1280 (N1280):   N_1280x720_{train,val}.json, N1280_protocol.json  (736x1280, nc=1)
+#
+# Each *_train.json / *_val.json is a JSON list of sample entries:
+#   {"id": <int>, "rgb": "<path>", "ir": "<path>", "boxes": [[x1, y1, x2, y2], ...],
+#    "classes": [0, ...], "width": <int>, "height": <int>, "orig_width": <int>, "orig_height": <int>}
+# Each *_protocol.json specifies:
+#   {"annotation": "<path/to/coco_gt.json>"}
