@@ -102,7 +102,16 @@ class CalibratedMidRankFusion(nn.Module):
 class DeRoFDet(DetectionModel):
     """Decomposition, Routing and Frequency Refinement Detector (YOLOv8m-P2 + SPMR + MEAF + CGSR)."""
 
-    def __init__(self, pretrained=None, nc=1, slim_variant="slim1", mask="ABC", p2_fusion_width=64):
+    def __init__(
+        self,
+        pretrained=None,
+        nc=1,
+        slim_variant="slim1",
+        mask="ABC",
+        p2_fusion_width=64,
+        spmr_gamma_init=0.0,
+        aux_scale=1.0,
+    ):
         if slim_variant not in VARIANT_SPECS:
             raise ValueError(f"Unknown slim_variant: {slim_variant}")
         mask = mask.upper()
@@ -124,6 +133,9 @@ class DeRoFDet(DetectionModel):
         cfg = VARIANT_SPECS[slim_variant]
         self.c_levels = set(cfg["c_levels"])
 
+        self.spmr_gamma_init = float(spmr_gamma_init)
+        self.aux_scale = float(aux_scale)
+
         self.spmr = nn.ModuleDict()
         self.fusion = nn.ModuleDict()
         self.cgsr = nn.ModuleDict()
@@ -131,7 +143,7 @@ class DeRoFDet(DetectionModel):
         for level, c in zip(LEVELS, CHANNELS):
             if self.has_a:
                 with isolated_seed(910000 + level):
-                    self.spmr[str(level)] = SPMR(c, channel_reduce=4, width=64)
+                    self.spmr[str(level)] = SPMR(c, channel_reduce=4, width=64, gamma_init=self.spmr_gamma_init)
 
             if self.has_b:
                 with isolated_seed(820000 + level):
@@ -157,7 +169,16 @@ class DeRoFDet(DetectionModel):
 
         self.names = {i: n for i, n in enumerate(["person"] if nc == 1 else ["person", "rider", "crowd"])}
         self.nc = nc
-        self.yaml.update(ch=6, derof_det=dict(variant=slim_variant, mask=mask, p2_fusion_width=p2_fusion_width))
+        self.yaml.update(
+            ch=6,
+            derof_det=dict(
+                variant=slim_variant,
+                mask=mask,
+                p2_fusion_width=p2_fusion_width,
+                spmr_gamma_init=self.spmr_gamma_init,
+                aux_scale=self.aux_scale,
+            ),
+        )
 
     def _neck_no_c(self, x, level):
         """Uncompensated high-frequency damping when Module C (CGSR) is disabled."""
@@ -233,7 +254,7 @@ class DeRoFDet(DetectionModel):
         auxiliary = [getattr(m, "aux", None) for m in self.modules()]
         auxiliary = [v for v in auxiliary if v is not None]
         if auxiliary:
-            extra = sum(auxiliary) * batch["img"].shape[0]
+            extra = sum(auxiliary) * batch["img"].shape[0] * self.aux_scale
             self.last_aux_loss = float(extra.detach())
             loss = loss + extra / loss.numel()
         return loss, items

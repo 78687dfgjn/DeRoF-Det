@@ -109,6 +109,10 @@ EXPERIMENTS = {
     "N960-ABC-slim1-in1k-fast": dict(dataset="N", arch="derof", slim_variant="slim1", mask="ABC", label="DeRoF-Det-slim1", prefix="N_960x540", proto="N960_protocol.json", hw=[544, 960], train_count=4980, val_count=900, batch=8, val_batch=8, schedule_epochs=60, stop_epoch=60, patience=30, conf=0.001, iou=0.65, max_det=300, selection_metric="AP50_95", degrade=False),
     "N1280-P2-Base-v2-in1k-fast": dict(dataset="N", arch="base_v2", slim_variant=None, mask="BASE", label="P2-Base-v2", prefix="N_1280x720", proto="N1280_protocol.json", hw=[736, 1280], train_count=4980, val_count=900, batch=4, val_batch=8, schedule_epochs=60, stop_epoch=60, patience=30, conf=0.001, iou=0.65, max_det=300, selection_metric="AP50_95", degrade=False),
     "N1280-ABC-slim1-in1k-fast": dict(dataset="N", arch="derof", slim_variant="slim1", mask="ABC", label="DeRoF-Det-slim1", prefix="N_1280x720", proto="N1280_protocol.json", hw=[736, 1280], train_count=4980, val_count=900, batch=4, val_batch=8, schedule_epochs=60, stop_epoch=60, patience=30, conf=0.001, iou=0.65, max_det=300, selection_metric="AP50_95", degrade=False),
+    # Tuned DeRoF-Det-slim1 (spmr_gamma_init=0.05, aux_scale=0.1)
+    "R-ABC-slim1-tuned-in1k-fast": dict(dataset="R", arch="derof", slim_variant="slim1", mask="ABC", label="DeRoF-Det-slim1-tuned", schedule_epochs=70, stop_epoch=60, patience=20, batch=8, val_batch=16, degrade=True, spmr_gamma_init=0.05, aux_scale=0.1),
+    "U-ABC-slim1-tuned-in1k-fast": dict(dataset="U", arch="derof", slim_variant="slim1", mask="ABC", label="DeRoF-Det-slim1-tuned", schedule_epochs=60, stop_epoch=40, patience=0, batch=16, val_batch=16, degrade=False, spmr_gamma_init=0.05, aux_scale=0.1),
+    "N4ch-ABC-slim1-tuned-in1k-fast": dict(dataset="N", arch="derof", slim_variant="slim1", mask="ABC", label="DeRoF-Det-slim1-tuned", prefix="N4ch_640x468", proto="N4ch_protocol.json", hw=[480, 640], train_count=2653, val_count=485, batch=8, val_batch=16, schedule_epochs=60, stop_epoch=60, patience=30, conf=0.001, iou=0.65, max_det=300, selection_metric="AP50_95", degrade=False, spmr_gamma_init=0.05, aux_scale=0.1),
 }
 
 for _sv in ("slim1", "slimB"):
@@ -126,6 +130,23 @@ for _sv in ("slim1", "slimB"):
             val_batch=16,
             degrade=True,
         )
+
+for _mask in ("A", "B", "C", "AB", "AC", "BC"):
+    EXPERIMENTS[f"R-{_mask}-slim1-tuned-in1k-fast"] = dict(
+        dataset="R",
+        arch="derof",
+        slim_variant="slim1",
+        mask=_mask,
+        label=f"DeRoF-Det-slim1-tuned-{_mask}",
+        schedule_epochs=70,
+        stop_epoch=60,
+        patience=20,
+        batch=8,
+        val_batch=16,
+        degrade=True,
+        spmr_gamma_init=0.05,
+        aux_scale=0.1,
+    )
 
 
 def spec_for(ident):

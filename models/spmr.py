@@ -101,7 +101,7 @@ class MultiscaleStripAttention(nn.Module):
 class SPMR(nn.Module):
     """Shared-Private Multiscale Recalibration (Module A) for dual-stream RGB-T calibration."""
 
-    def __init__(self, channels, channel_reduce=4, width=64):
+    def __init__(self, channels, channel_reduce=4, width=64, gamma_init=0.0):
         super().__init__()
         self.shared = conv_bn_silu(channels * 2, width)
         self.to_r = nn.Conv2d(width, channels, 1)
@@ -113,6 +113,10 @@ class SPMR(nn.Module):
         self.gates = nn.Conv2d(width, 3, 1)
         self.rgb_attn = Residual(MultiscaleStripAttention(channels, channel_reduce=channel_reduce))
         self.ir_attn = Residual(MultiscaleStripAttention(channels, channel_reduce=channel_reduce))
+        if gamma_init:
+            with torch.no_grad():
+                self.rgb_attn.gamma.fill_(float(gamma_init))
+                self.ir_attn.gamma.fill_(float(gamma_init))
         self.aux = None
 
     def forward(self, r, t):

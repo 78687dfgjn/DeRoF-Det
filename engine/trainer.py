@@ -134,6 +134,8 @@ class DeRoFTrainer(DetectionTrainer):
                 slim_variant=self.s_cfg["slim_variant"],
                 mask=self.s_cfg["mask"],
                 p2_fusion_width=self.p2_fusion_width,
+                spmr_gamma_init=self.s_cfg.get("spmr_gamma_init", 0.0),
+                aux_scale=self.s_cfg.get("aux_scale", 1.0),
             )
         else:
             raise ValueError(f"Unknown arch: {arch}")
@@ -252,6 +254,8 @@ class DeRoFTrainer(DetectionTrainer):
                 actual_cap=self.stop_epoch,
                 head="P2-P5",
                 p2_fusion_width=self.p2_fusion_width,
+                spmr_gamma_init=self.s_cfg.get("spmr_gamma_init", 0.0),
+                aux_scale=self.s_cfg.get("aux_scale", 1.0),
                 source_sha=self.source_sha,
                 full_state_restored=self.full_state_restored,
                 degrade=self.s_cfg["degrade"],

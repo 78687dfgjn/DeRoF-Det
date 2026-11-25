@@ -13,7 +13,7 @@ from ultralytics import settings
 import ultralytics.engine.trainer as native_trainer
 
 from engine.checkpoint import RunLock
-from engine.protocols import EXPERIMENTS, P2_TRAIN
+from engine.protocols import EXPERIMENTS, P2_TRAIN, spec_for
 from engine.trainer import DeRoFTrainer
 
 settings.update({"sync": False, "wandb": False, "mlflow": False, "tensorboard": False})
@@ -69,7 +69,7 @@ def run(
         device="0" if torch.cuda.device_count() > 1 else "",
         deterministic=False,
         patience=pat,
-        imgsz=640,
+        imgsz=max(spec_for(ident)["hw"]),
         workers=num_workers,
     )
 
