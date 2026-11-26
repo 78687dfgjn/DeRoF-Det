@@ -30,15 +30,6 @@ DeRoF-Det/
 └── requirements.txt
 ```
 
-## Supported Benchmarks & Configurations
-
-| Dataset | Experiment IDs | Input HxW | Classes | Metric / Selection |
-| :--- | :--- | :--- | :--- | :--- |
-| RGBTDronePerson | `R-{ABC,A,B,C,AB,AC,BC}-{slim1,slimB,slim1-tuned}-in1k-fast` | `512 x 640` | 3 (`person`, `rider`, `crowd`) | Tiny-COCO `mAP50_all` |
-| VTUAV-det | `U-ABC-{slim1,slimB,slim1-tuned}-in1k-fast` | `384 x 640` | 1 (`person`) | COCO `mAP50_all` |
-| NII-CU MAPD | `N-{ABC-slim1,ABC-slimB,P2-Add,P2-ConcatC2f}-in1k-fast` | `384 x 640` | 1 (`person`) | COCO `mAP50_all` |
-| NII-CU 4ch / HD | `{N4ch,N960,N1280}-{P2-Base-v2,ABC-slim1}-in1k-fast`, `N4ch-ABC-slim1-tuned-in1k-fast` | `480x640` / `544x960` / `736x1280` | 1 (`person`) | COCO `AP50_95` |
-
 ## Usage
 
 ```bash
